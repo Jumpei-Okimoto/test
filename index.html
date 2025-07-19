@@ -41,6 +41,133 @@
             margin-bottom: 10px;
         }
         
+        .nfc-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .scan-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .scan-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .scan-button:active {
+            transform: translateY(0);
+        }
+
+        .scan-button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status {
+            margin: 20px 0;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 0.9em;
+            font-weight: 500;
+        }
+
+        .status.info {
+            background: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        .status.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+
+        .status.error {
+            background: #fce4ec;
+            color: #c62828;
+            border: 1px solid #f8bbd9;
+        }
+
+        .status.warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border: 1px solid #ffcc02;
+        }
+
+        .data-display {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .data-display h3 {
+            color: #495057;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .data-content {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            word-wrap: break-word;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 10px;
+        }
+
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .support-info {
+            margin-top: 30px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 0.8em;
+            color: #6c757d;
+        }
         .subtitle {
             color: #666;
             font-size: 1.1em;
@@ -286,32 +413,34 @@
             <div class="room-info">
                 <p>グループコード</p>
                 <div class="room-code" id="display-room-code">ABC123</div>
-                <div class="qr-code-container">
-                    <canvas id="qr-code" width="200" height="200"></canvas>
+                <!-- <canvas id="qr-code" width="200" height="200"></canvas> -->
                     <img src = "C:\Users\okiju\Downloads\IMG_3506.PNG">
                     <p style="margin-top: 10px; color: #666;">QRコードで参加してもらう</p>
-                </div>
-            </div>
-        
-            
+            </div>         
 
-            <div class="member-list">
+            <button id="scanButton" class="scan-button">
+                席についたらNFCタグをスキャン
+            </button>
+        
+            <div id="status" class="status info">
+                <!-- NFCタグを読み取る準備ができています -->
+            </div>
+            
+            <div id="dataDisplay" class="data-display" style="display: none;">
+                <button class="btn btn-success nfc-button" onclick="showMeetup()">
+                    📱 メンバーに席を通知する
+                </button>
+             </div>
+            
+             <div class="member-list">
                 <h3>参加メンバー</h3>
                 <div id="members-list">
                     <!-- メンバーリストがここに表示される -->
                 </div>
             </div>
-            
-            <button class="btn btn-success nfc-button" onclick="showMeetup()">
-                📱 席に着いたらNFCタグにタッチ
-            </button>
-            
+
             <button class="btn btn-secondary" onclick="leaveRoom()">
                 グループから退出
-            </button>
-
-            <button class="btn btn-deback" onclick="showMeetup()">
-                デモ用
             </button>
         </div>
        
@@ -323,8 +452,9 @@
             
             <div class="location-info">
                 <div class="location-text" id="meetup-location">
-                    テーブル A-15
+                    <div id="dataContent" class="data-content"></div>
                 </div>
+
                 <div class="map-container">
                     <canvas id="location-map" width="300" height="200"></canvas>
                 </div>
@@ -480,7 +610,7 @@
             document.getElementById('display-room-code').textContent = room.code;
             
             // QRコード生成
-            generateQRCode(room.code);
+            // generateQRCode(room.code);
             
             const membersList = document.getElementById('members-list');
             membersList.innerHTML = '';
@@ -498,7 +628,179 @@
             });
         }
     
-        
+                
+        class NFCReader {
+            constructor() {
+                this.scanButton = document.getElementById('scanButton');
+                this.statusElement = document.getElementById('status');
+                this.dataDisplay = document.getElementById('dataDisplay');
+                this.dataContent = document.getElementById('dataContent');
+                this.isScanning = false;
+                
+                this.init();
+            }
+
+            init() {
+                this.checkNFCSupport();
+                this.scanButton.addEventListener('click', () => this.startScan());
+            }
+
+            checkNFCSupport() {
+                if ('NDEFReader' in window) {
+                    this.showStatus('Web NFC API対応ブラウザです', 'success');
+                } else {
+                    this.showStatus('このブラウザはWeb NFC APIに対応していません。', 'warning');
+                }
+            }
+
+            showStatus(message, type = 'info') {
+                this.statusElement.textContent = message;
+                this.statusElement.className = `status ${type}`;
+            }
+
+            async startScan() {
+                if (this.isScanning) return;
+
+                try {
+                    this.isScanning = true;
+                    this.scanButton.disabled = true;
+                    this.scanButton.innerHTML = '<span class="loading"></span>NFCタグを近づけてください...';
+                    this.scanButton.classList.add('pulse');
+                    
+                    this.showStatus('NFCタグをスマホに近づけてください', 'info');
+                    this.dataDisplay.style.display = 'none';
+
+                    if ('NDEFReader' in window) {
+                        await this.scanWithWebNFC();
+                    } else {
+                        // フォールバック: Core NFC (iOS Safari)
+                        await this.scanWithCoreNFC();
+                    }
+                } catch (error) {
+                    this.handleError(error);
+                } finally {
+                    this.isScanning = false;
+                    this.scanButton.disabled = false;
+                    this.scanButton.innerHTML = 'NFCタグをスキャン';
+                    this.scanButton.classList.remove('pulse');
+                }
+            }
+
+            async scanWithWebNFC() {
+                const ndef = new NDEFReader();
+                
+                // 権限をリクエスト
+                await ndef.scan();
+                
+                this.showStatus('スキャン中... NFCタグを近づけてください', 'info');
+
+                // 読み取りイベントリスナーを設定
+                ndef.addEventListener('reading', ({ message }) => {
+                    this.handleNFCData(message);
+                });
+
+                ndef.addEventListener('readingerror', (error) => {
+                    this.handleError(error);
+                });
+
+                // 5秒後にタイムアウト
+                setTimeout(() => {
+                    if (this.isScanning) {
+                        this.showStatus('タイムアウトしました。もう一度お試しください', 'warning');
+                        this.isScanning = false;
+                        this.scanButton.disabled = false;
+                        this.scanButton.innerHTML = 'NFCタグをスキャン';
+                        this.scanButton.classList.remove('pulse');
+                    }
+                }, 5000);
+            }
+
+            async scanWithCoreNFC() {
+                // iOS Safari用のフォールバック
+                this.showStatus('iOS Safariの場合、設定 > プライバシー > NFC でアクセスを許可してください', 'warning');
+                
+                // iOS Safari では Web NFC API が限定的なので、
+                // ユーザーに手動でNFCタグの内容を入力してもらう
+                const userInput = prompt('NFCタグの内容を手動で入力してください:');
+                if (userInput) {
+                    this.displayData(userInput, 'text');
+                    this.showStatus('テーブル番号を読み取りました', 'success');
+                } else {
+                    this.showStatus('入力がキャンセルされました', 'warning');
+                }
+            }
+
+            handleNFCData(message) {
+                this.showStatus('NFCタグを読み取りました！', 'success');
+                
+                let allData = [];
+                
+                for (const record of message.records) {
+                    const textDecoder = new TextDecoder(record.encoding || 'utf-8');
+                    const data = textDecoder.decode(record.data);
+                    
+                    allData.push({
+                        recordType: record.recordType,
+                        mediaType: record.mediaType,
+                        data: data,
+                        encoding: record.encoding
+                    });
+                }
+
+                if (allData.length > 0) {
+                    this.displayData(allData[0].data, allData[0].recordType);
+                } else {
+                    this.showStatus('データが見つかりませんでした', 'warning');
+                }
+            }
+
+            displayData(data, type) {
+                this.dataContent.innerHTML = `
+                    <strong>テーブル:</strong>
+                    ${this.escapeHtml(data)}
+                `;
+                this.dataDisplay.style.display = 'block';
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            handleError(error) {
+                console.error('NFC Error:', error);
+                
+                if (error.name === 'NotAllowedError') {
+                    this.showStatus('NFC権限が拒否されました。ブラウザ設定を確認してください', 'error');
+                } else if (error.name === 'NotSupportedError') {
+                    this.showStatus('お使いのデバイスはNFCに対応していません', 'error');
+                } else if (error.name === 'NotReadableError') {
+                    this.showStatus('NFCタグが読み取れませんでした', 'error');
+                } else {
+                    this.showStatus(`エラー: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // アプリケーション開始
+        document.addEventListener('DOMContentLoaded', () => {
+            new NFCReader();
+        });
+
+        // サービスワーカー登録（PWA対応）
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch(registrationError => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
         // 最終メンバーリスト更新
         function updateFinalMembersList() {
             const room = appState.rooms[appState.currentRoom];
@@ -550,58 +852,58 @@
             }, 4000);
         }
         
-        // QRコード生成（シンプルな実装）
-        function generateQRCode(text) {
-            const canvas = document.getElementById('qr-code');
-            const ctx = canvas.getContext('2d');
+        // // QRコード生成（シンプルな実装）
+        // function generateQRCode(text) {
+        //     const canvas = document.getElementById('qr-code');
+        //     const ctx = canvas.getContext('2d');
             
-            // キャンバスをクリア
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     // キャンバスをクリア
+        //     ctx.fillStyle = '#ffffff';
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // シンプルなQRコード風の表示（実際のQRコードではありません）
-            const size = 8;
-            const modules = 25;
-            const offset = (canvas.width - modules * size) / 2;
+        //     // シンプルなQRコード風の表示（実際のQRコードではありません）
+        //     const size = 8;
+        //     const modules = 25;
+        //     const offset = (canvas.width - modules * size) / 2;
             
-            // ランダムパターンでQRコード風に表示
-            const seed = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            let random = seed;
+        //     // ランダムパターンでQRコード風に表示
+        //     const seed = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+        //     let random = seed;
             
-            function pseudoRandom() {
-                random = (random * 9301 + 49297) % 233280;
-                return random / 233280;
-            }
+        //     function pseudoRandom() {
+        //         random = (random * 9301 + 49297) % 233280;
+        //         return random / 233280;
+        //     }
             
-            ctx.fillStyle = '#000000';
+        //     ctx.fillStyle = '#000000';
             
-            // 位置検出パターン（左上、右上、左下の角）
-            const corners = [[0, 0], [18, 0], [0, 18]];
-            corners.forEach(([x, y]) => {
-                // 外枠
-                ctx.fillRect(offset + x * size, offset + y * size, 7 * size, 7 * size);
-                // 内側を白で塗り潰し
-                ctx.fillStyle = '#ffffff';
-                ctx.fillRect(offset + (x + 1) * size, offset + (y + 1) * size, 5 * size, 5 * size);
-                // 中心を黒で塗り潰し
-                ctx.fillStyle = '#000000';
-                ctx.fillRect(offset + (x + 2) * size, offset + (y + 2) * size, 3 * size, 3 * size);
-            });
+        //     // 位置検出パターン（左上、右上、左下の角）
+        //     const corners = [[0, 0], [18, 0], [0, 18]];
+        //     corners.forEach(([x, y]) => {
+        //         // 外枠
+        //         ctx.fillRect(offset + x * size, offset + y * size, 7 * size, 7 * size);
+        //         // 内側を白で塗り潰し
+        //         ctx.fillStyle = '#ffffff';
+        //         ctx.fillRect(offset + (x + 1) * size, offset + (y + 1) * size, 5 * size, 5 * size);
+        //         // 中心を黒で塗り潰し
+        //         ctx.fillStyle = '#000000';
+        //         ctx.fillRect(offset + (x + 2) * size, offset + (y + 2) * size, 3 * size, 3 * size);
+        //     });
             
-            // データパターン
-            for (let i = 0; i < modules; i++) {
-                for (let j = 0; j < modules; j++) {
-                    // 位置検出パターンの領域をスキップ
-                    if ((i < 9 && j < 9) || (i < 9 && j >= 16) || (i >= 16 && j < 9)) {
-                        continue;
-                    }
+        //     // データパターン
+        //     for (let i = 0; i < modules; i++) {
+        //         for (let j = 0; j < modules; j++) {
+        //             // 位置検出パターンの領域をスキップ
+        //             if ((i < 9 && j < 9) || (i < 9 && j >= 16) || (i >= 16 && j < 9)) {
+        //                 continue;
+        //             }
                     
-                    if (pseudoRandom() > 0.5) {
-                        ctx.fillRect(offset + i * size, offset + j * size, size, size);
-                    }
-                }
-            }
-        }
+        //             if (pseudoRandom() > 0.5) {
+        //                 ctx.fillRect(offset + i * size, offset + j * size, size, size);
+        //             }
+        //         }
+        //     }
+        // }
         
         // 食堂の地図を描画
         function drawLocationMap(location) {
