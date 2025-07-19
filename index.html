@@ -3,578 +3,764 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>食堂合流アプリ</title>
+    <title>食堂合流システム</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
         }
-
+        
         .container {
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
             text-align: center;
+            position: relative;
         }
-
+        
         .header {
             margin-bottom: 30px;
         }
-
-        .header h1 {
+        
+        h1 {
             color: #333;
-            font-size: 24px;
+            font-size: 2.5em;
             margin-bottom: 10px;
         }
-
-        .header p {
+        
+        .subtitle {
             color: #666;
-            font-size: 14px;
+            font-size: 1.1em;
         }
-
-        .status {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
+        
+        .form-group {
             margin-bottom: 20px;
-            border-left: 4px solid #667eea;
+            text-align: left;
         }
-
-        .status h2 {
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
             color: #333;
-            font-size: 18px;
-            margin-bottom: 10px;
         }
-
-        .status p {
-            color: #666;
-            font-size: 14px;
+        
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
         }
-
-        .button {
+        
+        input[type="text"]:focus, input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn {
             background: linear-gradient(45deg, #667eea, #764ba2);
             color: white;
             border: none;
-            border-radius: 12px;
-            padding: 15px 25px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 25px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             margin: 10px;
-            min-width: 200px;
+            min-width: 150px;
         }
-
-        .button:hover {
+        
+        .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
         }
 
-        .button.secondary {
-            background: #e9ecef;
-            color: #495057;
+        .btn-deback {
+            background: linear-gradient(45deg, #c0c0c0, #c0c0c0);
         }
-
-        .button.secondary:hover {
-            background: #dee2e6;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        
+        .btn-success {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
         }
-
-        .qr-container {
-            background: white;
-            border: 2px solid #e9ecef;
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .qr-code {
-            width: 200px;
-            height: 200px;
+        
+        .room-info {
             background: #f8f9fa;
-            border: 2px dashed #dee2e6;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 15px;
-            font-size: 14px;
-            color: #666;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            border-left: 5px solid #667eea;
         }
-
-        .qr-actual {
-            width: 180px;
-            height: 180px;
-            background: white;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
-            color: #333;
+        
+        .room-code {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+            font-family: monospace;
         }
-
-        .group-info {
-            background: #e3f2fd;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-        }
-
+        
         .member-list {
             text-align: left;
-            margin: 15px 0;
+            margin: 20px 0;
         }
-
+        
         .member {
-            display: flex;
-            align-items: center;
+            background: #e9ecef;
             padding: 10px;
-            background: #f8f9fa;
-            border-radius: 8px;
             margin: 5px 0;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .member-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 10px;
+        
+        .member.ready {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
         }
-
-        .status-waiting { background: #ffc107; }
-        .status-ready { background: #28a745; }
-        .status-seated { background: #17a2b8; }
-
+        
+        .status {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .status.ready {
+            color: #28a745;
+        }
+        
         .notification {
             position: fixed;
             top: 20px;
             right: 20px;
             background: #28a745;
             color: white;
-            padding: 15px 20px;
+            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
             transform: translateX(400px);
             transition: transform 0.3s ease;
             z-index: 1000;
         }
-
+        
         .notification.show {
             transform: translateX(0);
         }
-
-        .seat-info {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
-        }
-
-        .seat-info h3 {
-            color: #155724;
-            margin-bottom: 10px;
-        }
-
-        .nfc-simulation {
+        
+        .location-info {
             background: #fff3cd;
             border: 1px solid #ffeaa7;
+            padding: 20px;
             border-radius: 10px;
-            padding: 15px;
-            margin: 15px 0;
-            font-size: 14px;
+            margin: 20px 0;
+        }
+        
+        .location-text {
+            font-size: 1.2em;
+            font-weight: bold;
             color: #856404;
         }
-
-        .hidden {
+        
+        .nfc-button {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 1.2em;
+            margin: 20px 0;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .screen {
             display: none;
         }
-
-        .input-group {
-            margin: 15px 0;
+        
+        .screen.active {
+            display: block;
         }
-
-        .input-group input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e9ecef;
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .qr-code-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        #qr-code {
+            border: 2px solid #ddd;
             border-radius: 8px;
-            font-size: 16px;
-            margin-bottom: 10px;
         }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #667eea;
+        
+        .map-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #location-map {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            background: #f8f9fa;
         }
     </style>
 </head>
 <body>
+    <!-- ホーム画面 -->
     <div class="container">
-        <div class="header">
-            <h1>🍽️ 食堂合流アプリ</h1>
-            <p>効率的にグループで食事を楽しもう</p>
-        </div>
-
-        <!-- 初期画面 -->
-        <div id="initial-screen">
-            <div class="status">
-                <h2>開始方法を選択</h2>
-                <p>新しいグループを作成するか、既存のグループに参加してください</p>
+        <div id="home-screen" class="screen active">
+            <div class="header">
+                <h1>🍽️ 社食合流システム</h1>
+                <p class="subtitle">みんなで食事を楽しもう!</p>
             </div>
-            <button class="button" onclick="createGroup()">新しいグループを作成</button>
-            <button class="button secondary" onclick="showJoinForm()">グループに参加</button>
             
-            <div id="join-form" class="hidden">
-                <div class="input-group">
-                    <input type="text" id="group-code" placeholder="グループコードを入力" maxlength="6">
-                    <button class="button" onclick="joinGroup()">参加</button>
-                </div>
-            </div>
+            <button class="btn" onclick="showCreateRoom()">
+                グループを作成
+            </button>
         </div>
-
-        <!-- NFC シミュレーション画面 -->
-        <div id="nfc-screen" class="hidden">
-            <div class="status">
-                <h2>📱 NFCタグにタッチ</h2>
-                <p>メニュー前のNFCタグにスマホをタッチしてください</p>
-            </div>
-            <div class="nfc-simulation">
-                <p>💡 実際の環境では、NFCタグにタッチするとグループが自動作成されます</p>
-            </div>
-            <button class="button" onclick="simulateNFC()">NFCタッチをシミュレート</button>
-        </div>
-
+        
         <!-- グループ作成画面 -->
-        <div id="leader-screen" class="hidden">
-            <div class="status">
-                <h2>👑 グループリーダー</h2>
-                <p>QRコードをメンバーに共有してください</p>
+        <div id="create-room-screen" class="screen">
+            <div class="header">
+                <h1>グループ作成</h1>
             </div>
-            <div class="qr-container">
-                <div class="qr-code">
-                    <div class="qr-actual" id="qr-display">
-                        QRコードが生成されます
-                    </div>
+            
+            <div class="form-group">
+                <label for="creator-name">あなたの名前</label>
+                <input type="text" id="creator-name" placeholder="例：田中">
+            </div>
+                        
+            <button class="btn btn-secondary" onclick="showHome()">
+                戻る
+            </button>
+
+            <button class="btn" onclick="createRoom()">
+                グループを作成
+            </button>
+        </div>
+        
+        <!-- 待機画面 -->
+        <div id="waiting-screen" class="screen">
+            <div class="header">
+                <h1>グループメンバー追加</h1>
+            </div>
+            
+            <div class="room-info">
+                <p>グループコード</p>
+                <div class="room-code" id="display-room-code">ABC123</div>
+                <div class="qr-code-container">
+                    <canvas id="qr-code" width="200" height="200"></canvas>
+                    <img src = "C:\Users\okiju\Downloads\IMG_3506.PNG">
+                    <p style="margin-top: 10px; color: #666;">QRコードで参加してもらう</p>
                 </div>
-                <p><strong>グループコード: <span id="group-code-display"></span></strong></p>
             </div>
-            <div class="group-info">
-                <h3>👥 参加メンバー (<span id="member-count">1</span>人)</h3>
-                <div class="member-list" id="member-list"></div>
-            </div>
-            <button class="button secondary" onclick="checkSeatAvailability()">席の確保状況を確認</button>
-        </div>
+        
+            
 
-        <!-- メンバー画面 -->
-        <div id="member-screen" class="hidden">
-            <div class="status">
-                <h2>👤 グループメンバー</h2>
-                <p>料理を受け取ったら「受け取り完了」を押してください</p>
+            <div class="member-list">
+                <h3>参加メンバー</h3>
+                <div id="members-list">
+                    <!-- メンバーリストがここに表示される -->
+                </div>
             </div>
-            <div class="group-info">
-                <h3>グループコード: <span id="member-group-code"></span></h3>
-                <p>リーダー: <span id="leader-name"></span></p>
-            </div>
-            <div class="member-list" id="member-status-list"></div>
-            <button class="button" onclick="markReady()" id="ready-button">料理受け取り完了</button>
-            <button class="button secondary" onclick="secureSeat()" id="seat-button" disabled>席を確保する</button>
-        </div>
+            
+            <button class="btn btn-success nfc-button" onclick="showMeetup()">
+                📱 席に着いたらNFCタグにタッチ
+            </button>
+            
+            <button class="btn btn-secondary" onclick="leaveRoom()">
+                グループから退出
+            </button>
 
-        <!-- 席確保画面 -->
-        <div id="seat-screen" class="hidden">
-            <div class="status">
-                <h2>🪑 席の確保</h2>
-                <p>空いている席を見つけてNFCタグにタッチしてください</p>
-            </div>
-            <div class="nfc-simulation">
-                <select id="seat-select">
-                    <option value="">席を選択してください</option>
-                    <option value="A-1">テーブルA-1 (窓際)</option>
-                    <option value="B-3">テーブルB-3 (中央)</option>
-                    <option value="C-2">テーブルC-2 (奥)</option>
-                    <option value="D-4">テーブルD-4 (入口近く)</option>
-                </select>
-            </div>
-            <button class="button" onclick="confirmSeat()">この席を確保</button>
+            <button class="btn btn-deback" onclick="showMeetup()">
+                デモ用
+            </button>
         </div>
-
+       
         <!-- 合流完了画面 -->
-        <div id="meeting-screen" class="hidden">
-            <div class="seat-info">
-                <h3>🎉 合流場所が決定！</h3>
-                <p><strong>席: <span id="meeting-location"></span></strong></p>
-                <p>確保者: <span id="seat-holder"></span></p>
+        <div id="meetup-screen" class="screen">
+            <div class="header">
+                <h1>🎉 合流場所が決まりました！</h1>
             </div>
-            <div class="member-list" id="final-member-list"></div>
-            <button class="button secondary" onclick="resetApp()">新しいグループを作成</button>
+            
+            <div class="location-info">
+                <div class="location-text" id="meetup-location">
+                    テーブル A-15
+                </div>
+                <div class="map-container">
+                    <canvas id="location-map" width="300" height="200"></canvas>
+                </div>
+                <p style="margin-top: 10px;">上記の場所で合流してください</p>
+            </div>
+            
+            <div class="member-list">
+                <h3>参加メンバー</h3>
+                <div id="final-members-list">
+                    <!-- メンバーリストがここに表示される -->
+                </div>
+            </div>
         </div>
     </div>
-
+    
     <!-- 通知 -->
     <div id="notification" class="notification">
-        <p id="notification-text"></p>
+        <div id="notification-text"></div>
     </div>
-
+    
     <script>
         // アプリケーションの状態管理
         let appState = {
-            currentScreen: 'initial',
-            userRole: null, // 'leader' or 'member'
-            groupCode: null,
-            userName: null,
-            members: [],
-            seatLocation: null,
-            seatHolder: null
+            currentScreen: 'home',
+            currentRoom: null,
+            currentUser: null,
+            rooms: {},
+            isCreator: false
         };
-
-        // ユーザー名をランダム生成（実際の実装では認証システムを使用）
-        function generateUserName() {
-            const names = ['田中', '佐藤', '鈴木', '高橋', '伊藤', '渡辺', '山本', '中村'];
-            const firstNames = ['太郎', '花子', '次郎', '美咲', '健太', '由美', '翔太', '綾香'];
-            return names[Math.floor(Math.random() * names.length)] + 
-                   firstNames[Math.floor(Math.random() * firstNames.length)];
-        }
-
-        // グループコード生成
-        function generateGroupCode() {
-            return Math.random().toString(36).substring(2, 8).toUpperCase();
-        }
-
-        // 画面切り替え
+        
+        // 画面遷移関数
         function showScreen(screenId) {
-            document.querySelectorAll('.container > div').forEach(div => {
-                if (div.id && div.id.includes('-screen')) {
-                    div.classList.add('hidden');
-                }
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
             });
-            document.getElementById('initial-screen').classList.add('hidden');
-            document.getElementById(screenId).classList.remove('hidden');
+            document.getElementById(screenId).classList.add('active');
             appState.currentScreen = screenId;
         }
-
+        
+        function showHome() {
+            showScreen('home-screen');
+        }
+        
+        function showCreateRoom() {
+            showScreen('create-room-screen');
+        }
+        
+        function showJoinRoom() {
+            showScreen('join-room-screen');
+            updateWaitingScreen();
+        }
+        
+        function showWaiting() {
+            showScreen('waiting-screen');
+        }
+        
+        function showNFCScreen() {
+            showScreen('nfc-screen');
+        }
+        
+        function showMeetup() {
+            showScreen('meetup-screen');
+            updateFinalMembersList();
+            drawLocationMap(location);
+        }
+        
+        // ランダムなルームコード生成
+        function generateRoomCode() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 6; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return result;
+        }
+        
+        // グループ作成
+        function createRoom() {
+            const creatorName = document.getElementById('creator-name').value;
+            
+            if (!creatorName) {
+                alert('名前を入力してください');
+                return;
+            }
+            
+            const roomCode = generateRoomCode();
+            const room = {
+                code: roomCode,
+                creator: creatorName,
+                members: [{
+                    name: creatorName,
+                    ready: false,
+                    isCreator: true
+                }],
+                location: null,
+                created: new Date()
+            };
+            
+            appState.rooms[roomCode] = room;
+            appState.currentRoom = roomCode;
+            appState.currentUser = creatorName;
+            appState.isCreator = true;
+            
+            updateWaitingScreen();
+            showWaiting();
+            showNotification('グループが作成されました！');
+        }
+        
+        // グループ参加
+        function joinRoom() {
+            const roomCode = document.getElementById('room-code-input').value.toUpperCase();
+            const memberName = document.getElementById('member-name').value;
+            
+            if (!roomCode || !memberName) {
+                alert('グループコードと名前を入力してください');
+                return;
+            }
+            
+            if (!appState.rooms[roomCode]) {
+                alert('無効なグループコードです');
+                return;
+            }
+            
+            const room = appState.rooms[roomCode];
+            
+            // 既に参加しているかチェック
+            const existingMember = room.members.find(m => m.name === memberName);
+            if (existingMember) {
+                alert('同じ名前のメンバーが既に参加しています');
+                return;
+            }
+            
+            room.members.push({
+                name: memberName,
+                ready: false,
+                isCreator: false
+            });
+            
+            appState.currentRoom = roomCode;
+            appState.currentUser = memberName;
+            appState.isCreator = false;
+            
+            updateWaitingScreen();
+            showWaiting();
+            showNotification('グループに参加しました！');
+        }
+        
+        // 待機画面の更新
+        function updateWaitingScreen() {
+            const room = appState.rooms[appState.currentRoom];
+            if (!room) return;
+            
+            document.getElementById('display-room-code').textContent = room.code;
+            
+            // QRコード生成
+            generateQRCode(room.code);
+            
+            const membersList = document.getElementById('members-list');
+            membersList.innerHTML = '';
+            
+            room.members.forEach(member => {
+                const memberElement = document.createElement('div');
+                memberElement.className = `member ${member.ready ? 'ready' : ''}`;
+                memberElement.innerHTML = `
+                    <span>${member.name} ${member.isCreator ? '(代表者)' : ''}</span>
+                    <span class="status ${member.ready ? 'ready' : ''}">
+                        ${member.ready ? '✅ 準備完了' : '⏳ 料理待ち'}
+                    </span>
+                `;
+                membersList.appendChild(memberElement);
+            });
+        }
+    
+        
+        // 最終メンバーリスト更新
+        function updateFinalMembersList() {
+            const room = appState.rooms[appState.currentRoom];
+            if (!room) return;
+            
+            const finalMembersList = document.getElementById('final-members-list');
+            finalMembersList.innerHTML = '';
+            
+            room.members.forEach(member => {
+                const memberElement = document.createElement('div');
+                memberElement.className = `member ${member.ready ? 'ready' : ''}`;
+                memberElement.innerHTML = `
+                    <span>${member.name} ${member.isCreator ? '(代表者)' : ''}</span>
+                    <span class="status ready">
+                        ${member.ready ? '✅ 席確保済み' : '✅ 席確保済み'}
+                    </span>
+                `;
+                finalMembersList.appendChild(memberElement);
+            });
+        }
+        
+        // グループから退出
+        function leaveRoom() {
+            if (confirm('本当にグループから退出しますか？')) {
+                const room = appState.rooms[appState.currentRoom];
+                if (room) {
+                    room.members = room.members.filter(m => m.name !== appState.currentUser);
+                }
+                
+                appState.currentRoom = null;
+                appState.currentUser = null;
+                appState.isCreator = false;
+                
+                showHome();
+                showNotification('グループから退出しました');
+            }
+        }
+        
         // 通知表示
         function showNotification(message) {
             const notification = document.getElementById('notification');
-            const text = document.getElementById('notification-text');
-            text.textContent = message;
+            const notificationText = document.getElementById('notification-text');
+            
+            notificationText.textContent = message;
             notification.classList.add('show');
+            
             setTimeout(() => {
                 notification.classList.remove('show');
-            }, 3000);
+            }, 4000);
         }
-
-        // グループ作成
-        function createGroup() {
-            showScreen('nfc-screen');
-        }
-
-        // NFC シミュレーション
-        function simulateNFC() {
-            appState.userRole = 'leader';
-            appState.groupCode = generateGroupCode();
-            appState.userName = generateUserName();
-            appState.members = [{
-                name: appState.userName,
-                status: 'waiting',
-                isLeader: true
-            }];
-
-            showScreen('leader-screen');
-            updateLeaderScreen();
-            showNotification('NFCタッチ成功！グループが作成されました');
-        }
-
-        // リーダー画面更新
-        function updateLeaderScreen() {
-            document.getElementById('group-code-display').textContent = appState.groupCode;
-            document.getElementById('member-count').textContent = appState.members.length;
+        
+        // QRコード生成（シンプルな実装）
+        function generateQRCode(text) {
+            const canvas = document.getElementById('qr-code');
+            const ctx = canvas.getContext('2d');
             
-            // QRコード表示（実際の実装ではQRコードライブラリを使用）
-            document.getElementById('qr-display').innerHTML = `
-                <div style="font-size: 10px; line-height: 1.2;">
-                    グループコード<br>
-                    <strong style="font-size: 16px;">${appState.groupCode}</strong><br>
-                    <small>実際はQRコード</small>
-                </div>
-            `;
-
-            updateMemberList('member-list');
-        }
-
-        // 参加フォーム表示
-        function showJoinForm() {
-            document.getElementById('join-form').classList.remove('hidden');
-        }
-
-        // グループ参加
-        function joinGroup() {
-            const code = document.getElementById('group-code').value.toUpperCase();
-            if (code.length !== 6) {
-                alert('正しいグループコードを入力してください');
-                return;
+            // キャンバスをクリア
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // シンプルなQRコード風の表示（実際のQRコードではありません）
+            const size = 8;
+            const modules = 25;
+            const offset = (canvas.width - modules * size) / 2;
+            
+            // ランダムパターンでQRコード風に表示
+            const seed = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+            let random = seed;
+            
+            function pseudoRandom() {
+                random = (random * 9301 + 49297) % 233280;
+                return random / 233280;
             }
-
-            appState.userRole = 'member';
-            appState.groupCode = code;
-            appState.userName = generateUserName();
             
-            // 実際の実装では、サーバーからグループ情報を取得
-            appState.members = [
-                { name: '田中太郎', status: 'waiting', isLeader: true },
-                { name: appState.userName, status: 'waiting', isLeader: false }
-            ];
-
-            showScreen('member-screen');
-            updateMemberScreen();
-            showNotification(`グループ ${code} に参加しました`);
-        }
-
-        // メンバー画面更新
-        function updateMemberScreen() {
-            document.getElementById('member-group-code').textContent = appState.groupCode;
-            document.getElementById('leader-name').textContent = 
-                appState.members.find(m => m.isLeader)?.name || '不明';
-            updateMemberList('member-status-list');
-        }
-
-        // メンバーリスト更新
-        function updateMemberList(containerId) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = '';
+            ctx.fillStyle = '#000000';
             
-            appState.members.forEach(member => {
-                const memberDiv = document.createElement('div');
-                memberDiv.className = 'member';
-                
-                const statusClass = `status-${member.status}`;
-                const statusText = {
-                    'waiting': '待機中',
-                    'ready': '準備完了',
-                    'seated': '着席済み'
-                }[member.status];
-
-                memberDiv.innerHTML = `
-                    <div class="member-status ${statusClass}"></div>
-                    <span>${member.name} ${member.isLeader ? '👑' : ''}</span>
-                    <span style="margin-left: auto; font-size: 12px; color: #666;">${statusText}</span>
-                `;
-                container.appendChild(memberDiv);
+            // 位置検出パターン（左上、右上、左下の角）
+            const corners = [[0, 0], [18, 0], [0, 18]];
+            corners.forEach(([x, y]) => {
+                // 外枠
+                ctx.fillRect(offset + x * size, offset + y * size, 7 * size, 7 * size);
+                // 内側を白で塗り潰し
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(offset + (x + 1) * size, offset + (y + 1) * size, 5 * size, 5 * size);
+                // 中心を黒で塗り潰し
+                ctx.fillStyle = '#000000';
+                ctx.fillRect(offset + (x + 2) * size, offset + (y + 2) * size, 3 * size, 3 * size);
             });
-        }
-
-        // 料理受け取り完了
-        function markReady() {
-            const memberIndex = appState.members.findIndex(m => m.name === appState.userName);
-            if (memberIndex !== -1) {
-                appState.members[memberIndex].status = 'ready';
-                document.getElementById('ready-button').disabled = true;
-                document.getElementById('ready-button').textContent = '受け取り完了済み';
-                document.getElementById('seat-button').disabled = false;
-                updateMemberList('member-status-list');
-                showNotification('料理の受け取りが完了しました');
-            }
-        }
-
-        // 席確保
-        function secureSeat() {
-            showScreen('seat-screen');
-        }
-
-        // 席確保確認
-        function confirmSeat() {
-            const selectedSeat = document.getElementById('seat-select').value;
-            if (!selectedSeat) {
-                alert('席を選択してください');
-                return;
-            }
-
-            appState.seatLocation = selectedSeat;
-            appState.seatHolder = appState.userName;
-
-            // 自分の状態を着席済みに更新
-            const memberIndex = appState.members.findIndex(m => m.name === appState.userName);
-            if (memberIndex !== -1) {
-                appState.members[memberIndex].status = 'seated';
-            }
-
-            showScreen('meeting-screen');
-            updateMeetingScreen();
-            showNotification(`席 ${selectedSeat} を確保しました！`);
-        }
-
-        // 合流画面更新
-        function updateMeetingScreen() {
-            document.getElementById('meeting-location').textContent = appState.seatLocation;
-            document.getElementById('seat-holder').textContent = appState.seatHolder;
-            updateMemberList('final-member-list');
-        }
-
-        // 席の確保状況確認
-        function checkSeatAvailability() {
-            alert('現在の状況:\n準備完了: ' + 
-                appState.members.filter(m => m.status === 'ready').length + '人\n' +
-                '着席済み: ' + appState.members.filter(m => m.status === 'seated').length + '人');
-        }
-
-        // アプリリセット
-        function resetApp() {
-            appState = {
-                currentScreen: 'initial',
-                userRole: null,
-                groupCode: null,
-                userName: null,
-                members: [],
-                seatLocation: null,
-                seatHolder: null
-            };
             
-            showScreen('initial-screen');
-            document.getElementById('join-form').classList.add('hidden');
-            document.getElementById('group-code').value = '';
-            document.getElementById('ready-button').disabled = false;
-            document.getElementById('ready-button').textContent = '料理受け取り完了';
-            document.getElementById('seat-button').disabled = true;
-        }
-
-        // 初期化
-        document.addEventListener('DOMContentLoaded', function() {
-            showScreen('initial-screen');
-        });
-
-        // 定期的にメンバー状態を更新（実際の実装ではWebSocketやServer-Sent Eventsを使用）
-        setInterval(() => {
-            if (appState.members.length > 1) {
-                // ランダムにメンバーの状態を更新（デモンストレーション用）
-                appState.members.forEach(member => {
-                    if (member.name !== appState.userName && Math.random() < 0.1) {
-                        if (member.status === 'waiting') member.status = 'ready';
-                        else if (member.status === 'ready' && Math.random() < 0.3) member.status = 'seated';
+            // データパターン
+            for (let i = 0; i < modules; i++) {
+                for (let j = 0; j < modules; j++) {
+                    // 位置検出パターンの領域をスキップ
+                    if ((i < 9 && j < 9) || (i < 9 && j >= 16) || (i >= 16 && j < 9)) {
+                        continue;
                     }
-                });
-                
-                if (appState.currentScreen === 'leader-screen') {
-                    updateMemberList('member-list');
-                } else if (appState.currentScreen === 'member-screen') {
-                    updateMemberList('member-status-list');
+                    
+                    if (pseudoRandom() > 0.5) {
+                        ctx.fillRect(offset + i * size, offset + j * size, size, size);
+                    }
                 }
             }
-        }, 3000);
+        }
+        
+        // 食堂の地図を描画
+        function drawLocationMap(location) {
+            const canvas = document.getElementById('location-map');
+            const ctx = canvas.getContext('2d');
+            
+            // キャンバスをクリア
+            ctx.fillStyle = '#f8f9fa';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // 食堂のレイアウトを描画
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            
+            // エリア区分線
+            ctx.beginPath();
+            ctx.moveTo(150, 0);
+            ctx.lineTo(150, 200);
+            ctx.moveTo(0, 100);
+            ctx.lineTo(300, 100);
+            ctx.stroke();
+            
+            // エリアラベル
+            ctx.fillStyle = '#666';
+            ctx.font = '16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('A', 75, 50);
+            ctx.fillText('B', 225, 50);
+            ctx.fillText('C', 75, 150);
+            ctx.fillText('D', 225, 150);
+            
+            // テーブルを描画
+            ctx.fillStyle = '#e9ecef';
+            ctx.strokeStyle = '#adb5bd';
+            ctx.lineWidth = 1;
+            
+            // 各エリアのテーブル配置
+            const tables = [
+                // エリアA
+                { x: 30, y: 20, w: 30, h: 20, label: 'A-1' },
+                { x: 80, y: 20, w: 30, h: 20, label: 'A-2' },
+                { x: 30, y: 60, w: 30, h: 20, label: 'A-3' },
+                { x: 80, y: 60, w: 30, h: 20, label: 'A-4' },
+                // エリアB
+                { x: 180, y: 20, w: 30, h: 20, label: 'B-1' },
+                { x: 230, y: 20, w: 30, h: 20, label: 'B-2' },
+                { x: 180, y: 60, w: 30, h: 20, label: 'B-3' },
+                { x: 230, y: 60, w: 30, h: 20, label: 'B-4' },
+                // エリアC
+                { x: 30, y: 120, w: 30, h: 20, label: 'C-1' },
+                { x: 80, y: 120, w: 30, h: 20, label: 'C-2' },
+                { x: 30, y: 160, w: 30, h: 20, label: 'C-3' },
+                { x: 80, y: 160, w: 30, h: 20, label: 'C-4' },
+                // エリアD
+                { x: 180, y: 120, w: 30, h: 20, label: 'D-1' },
+                { x: 230, y: 120, w: 30, h: 20, label: 'D-2' },
+                { x: 180, y: 160, w: 30, h: 20, label: 'D-3' },
+                { x: 230, y: 160, w: 30, h: 20, label: 'D-4' }
+            ];
+            
+            tables.forEach(table => {
+                const isTarget = location.includes(table.label);
+                
+                // テーブルの色を設定
+                if (isTarget) {
+                    ctx.fillStyle = '#28a745';
+                    ctx.strokeStyle = '#1e7e34';
+                    ctx.lineWidth = 3;
+                } else {
+                    ctx.fillStyle = '#e9ecef';
+                    ctx.strokeStyle = '#adb5bd';
+                    ctx.lineWidth = 1;
+                }
+                
+                // テーブルを描画
+                ctx.fillRect(table.x, table.y, table.w, table.h);
+                ctx.strokeRect(table.x, table.y, table.w, table.h);
+                
+                // テーブル番号
+                ctx.fillStyle = isTarget ? '#ffffff' : '#495057';
+                ctx.font = '10px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(table.label, table.x + table.w/2, table.y + table.h/2 + 3);
+            });
+            
+            // 入口を表示
+            ctx.fillStyle = '#007bff';
+            ctx.fillRect(130, 190, 40, 10);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '12px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('入口', 150, 198);
+            
+            // 「現在地」マーカー（合流場所）
+            const targetTable = tables.find(t => location.includes(t.label));
+            if (targetTable) {
+                ctx.fillStyle = '#dc3545';
+                ctx.beginPath();
+                ctx.arc(targetTable.x + targetTable.w/2, targetTable.y - 10, 5, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                ctx.fillStyle = '#dc3545';
+                ctx.font = '12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('👥', targetTable.x + targetTable.w/2, targetTable.y - 2);
+            }
+        }
+        function checkURLParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const joinCode = urlParams.get('join');
+            
+            if (joinCode) {
+                document.getElementById('room-code-input').value = joinCode;
+                showJoinRoom();
+            }
+        }
+        
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', function() {
+            checkURLParams();
+            
+            // デモ用のサンプルルームを作成
+            const sampleRoom = {
+                code: 'DEMO01',
+                creator: 'デモユーザー',
+                members: [
+                    { name: 'デモユーザー', ready: true, isCreator: true },
+                    { name: '田中', ready: true, isCreator: false },
+                    { name: '佐藤', ready: true, isCreator: false }
+                ],
+                location: null,
+                created: new Date()
+            };
+            
+            appState.rooms['DEMO01'] = sampleRoom;
+        });
+        
+        // Web API のサポート状況をチェック（実際の実装用）
+        function checkWebAPISupport() {
+            // NFC API サポートチェック
+            if ('NDEFReader' in window) {
+                console.log('NFC API サポートあり');
+            } else {
+                console.log('NFC API サポートなし - シミュレーションモードで動作');
+            }
+            
+            // Notification API サポートチェック
+            if ('Notification' in window) {
+                console.log('Notification API サポートあり');
+            } else {
+                console.log('Notification API サポートなし');
+            }
+        }
+        
+        checkWebAPISupport();
     </script>
 </body>
 </html>
