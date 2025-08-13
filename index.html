@@ -635,7 +635,7 @@
 
             checkNFCSupport() {
                 if ('NDEFReader' in window) {
-                    this.showStatus('Web NFC API対応ブラウザです', 'success');
+                    // this.showStatus('Web NFC API対応ブラウザです', 'success');
                 } else {
                     this.showStatus('このブラウザはWeb NFC APIに対応していません。', 'warning');
                 }
@@ -861,14 +861,6 @@
             ctx.moveTo(0, 100);
             ctx.lineTo(300, 100);
             ctx.stroke();
-
-            // // エリア区分線
-            // ctx.beginPath();
-            // ctx.moveTo(150, 0);
-            // ctx.lineTo(150, 200);
-            // ctx.moveTo(0, 100);
-            // ctx.lineTo(300, 100);
-            // ctx.stroke();
   
             // エリアラベル
             ctx.fillStyle = '#666';
@@ -878,15 +870,6 @@
             ctx.fillText('B', 180, 50);
             ctx.fillText('C', 60, 150);
             ctx.fillText('D', 180, 150);
-
-            // // エリアラベル
-            // ctx.fillStyle = '#666';
-            // ctx.font = '16px Arial';
-            // ctx.textAlign = 'center';
-            // ctx.fillText('A', 75, 50);
-            // ctx.fillText('B', 225, 50);
-            // ctx.fillText('C', 75, 150);
-            // ctx.fillText('D', 225, 150);
             
             // テーブルを描画
             ctx.fillStyle = '#e9ecef';
