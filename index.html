@@ -635,9 +635,9 @@
 
             checkNFCSupport() {
                 if ('NDEFReader' in window) {
-                    // this.showStatus('Web NFC API対応ブラウザです', 'success');
+                    this.showStatus('あなたの端末はNFCの読み取りに対応しています', 'success');
                 } else {
-                    this.showStatus('このブラウザはWeb NFC APIに対応していません。', 'warning');
+                    this.showStatus('あなたの端末はNFCの読み取りに対応していません。テーブル番号を手入力してください。', 'warning');
                 }
             }
 
