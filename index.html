@@ -413,8 +413,8 @@
             <div class="room-info">
                 <p>グループコード</p>
                 <div class="room-code" id="display-room-code">ABC123</div>
-                <!-- <canvas id="qr-code" width="200" height="200"></canvas> -->
-                    <img src = "https://github.com/Jumpei-Okimoto/test/blob/main/IMG_3506.png">
+                    <img src = "https://icedrive.net/s/CavhDffgf9V3ZGQzzTxkYDxWXbNX">
+                    <img src = "C:\Users\okiju\Downloads\IMG_3506.png">
                     <p style="margin-top: 10px; color: #666;">QRコードで参加してもらう</p>
             </div>         
 
@@ -852,58 +852,6 @@
             }, 4000);
         }
         
-        // // QRコード生成（シンプルな実装）
-        // function generateQRCode(text) {
-        //     const canvas = document.getElementById('qr-code');
-        //     const ctx = canvas.getContext('2d');
-            
-        //     // キャンバスをクリア
-        //     ctx.fillStyle = '#ffffff';
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-        //     // シンプルなQRコード風の表示（実際のQRコードではありません）
-        //     const size = 8;
-        //     const modules = 25;
-        //     const offset = (canvas.width - modules * size) / 2;
-            
-        //     // ランダムパターンでQRコード風に表示
-        //     const seed = text.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        //     let random = seed;
-            
-        //     function pseudoRandom() {
-        //         random = (random * 9301 + 49297) % 233280;
-        //         return random / 233280;
-        //     }
-            
-        //     ctx.fillStyle = '#000000';
-            
-        //     // 位置検出パターン（左上、右上、左下の角）
-        //     const corners = [[0, 0], [18, 0], [0, 18]];
-        //     corners.forEach(([x, y]) => {
-        //         // 外枠
-        //         ctx.fillRect(offset + x * size, offset + y * size, 7 * size, 7 * size);
-        //         // 内側を白で塗り潰し
-        //         ctx.fillStyle = '#ffffff';
-        //         ctx.fillRect(offset + (x + 1) * size, offset + (y + 1) * size, 5 * size, 5 * size);
-        //         // 中心を黒で塗り潰し
-        //         ctx.fillStyle = '#000000';
-        //         ctx.fillRect(offset + (x + 2) * size, offset + (y + 2) * size, 3 * size, 3 * size);
-        //     });
-            
-        //     // データパターン
-        //     for (let i = 0; i < modules; i++) {
-        //         for (let j = 0; j < modules; j++) {
-        //             // 位置検出パターンの領域をスキップ
-        //             if ((i < 9 && j < 9) || (i < 9 && j >= 16) || (i >= 16 && j < 9)) {
-        //                 continue;
-        //             }
-                    
-        //             if (pseudoRandom() > 0.5) {
-        //                 ctx.fillRect(offset + i * size, offset + j * size, size, size);
-        //             }
-        //         }
-        //     }
-        // }
         
         // 食堂の地図を描画
         function drawLocationMap(location) {
