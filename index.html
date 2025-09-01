@@ -666,7 +666,6 @@
                     }
                 } catch (error) {
                     this.handleError(error);
-                } finally {
                     this.isScanning = false;
                     this.scanButton.disabled = false;
                     this.scanButton.innerHTML = '席についたらNFCタグをスキャン';
@@ -713,6 +712,7 @@
                 if (userInput) {
                     this.displayData(userInput, 'text');
                     this.showStatus('テーブル番号を読み取りました', 'success');
+                    this.scanButton.style.display = 'none';
                 } else {
                     this.showStatus('入力がキャンセルされました', 'warning');
                 }
@@ -737,6 +737,7 @@
 
                 if (allData.length > 0) {
                     this.displayData(allData[0].data, allData[0].recordType);
+                    this.scanButton.style.display = 'none';
                 } else {
                     this.showStatus('データが見つかりませんでした', 'warning');
                 }
